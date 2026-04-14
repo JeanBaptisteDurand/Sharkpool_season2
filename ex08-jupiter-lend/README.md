@@ -1,5 +1,9 @@
 # Exercise 08 - Jupiter Lend Deposit
 
+**Status: DONE** — Deposited 10 USDC into the Jupiter Lend USDC vault on mainnet.
+
+TX: `4nqa9DmwFLHDKSvxUKJHuhKykPegwK6pddvgCvNoX2AZGWrb5KiRpLCJWwoMmR5ZbPgSSE2bQxYyeE6R3XoPvwCD`
+
 ## Task
 
 Deposit any amount of stablecoins into Jupiter Lend.
