@@ -38,7 +38,17 @@ export function useMetrics() {
         } catch {}
       }
 
-      setData(metrics);
+      // Preserve previous values for fields that came back falsy on this refetch
+      setData(prev => {
+        if (!prev) return metrics;
+        const merged = { ...metrics };
+        (Object.keys(merged) as (keyof Metrics)[]).forEach(key => {
+          if (!merged[key] && prev[key]) {
+            merged[key] = prev[key] as never;
+          }
+        });
+        return merged;
+      });
       setError(null);
     } catch (e: any) {
       setError(e.message);
