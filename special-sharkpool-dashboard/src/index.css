@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0e1a;
+  --card: #111827;
+  --card-hover: #1a2235;
+  --border: #1e293b;
+  --accent: #14f195;
+  --accent-dim: rgba(20, 241, 149, 0.15);
+  --purple: #9945ff;
+  --cyan: #00c2ff;
+  --amber: #f59e0b;
+  --text: #ffffff;
+  --text-secondary: #94a3b8;
+  --muted: #64748b;
+  --danger: #ef4444;
+
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(20, 241, 149, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(153, 69, 255, 0.03) 0%, transparent 50%);
+}
