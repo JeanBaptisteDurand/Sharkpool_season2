@@ -25,8 +25,17 @@
   background-clip: text;
 }
 
-.header .logo-icon {
-  font-size: 2.5rem;
+/* Corner logo */
+.corner-logo {
+  position: fixed;
+  top: 1.2rem;
+  left: 1.2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+  z-index: 10;
+  border: 1px solid var(--border-color);
 }
 
 /* Wallet button override */
@@ -99,18 +108,39 @@
   text-align: center;
 }
 
-/* Network badge */
-.network-badge {
+/* Network selector */
+.network-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0.3rem;
+}
+
+.network-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0.4em 1em;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.network-btn.active {
   background: var(--accent-dim);
   color: var(--accent);
-  padding: 0.3em 0.8em;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin-top: 0.5rem;
+}
+
+.network-btn:hover:not(.active) {
+  color: var(--text-secondary);
 }
 
 .network-dot {
@@ -121,9 +151,65 @@
   animation: pulse 2s ease-in-out infinite;
 }
 
+.network-dot.testnet {
+  background: var(--accent);
+}
+
+.network-dot.devnet {
+  background: #818cf8;
+}
+
+.network-dot.mainnet {
+  background: #f59e0b;
+}
+
+.network-btn.active.testnet {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.network-btn.active.devnet {
+  background: rgba(129, 140, 248, 0.15);
+  color: #818cf8;
+}
+
+.network-btn.active.mainnet {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.network-btn:not(.active) .network-dot {
+  background: var(--text-muted);
+  animation: none;
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
+}
+
+/* Recipient input */
+.recipient-input {
+  width: 100%;
+  padding: 0.75em 1em;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  margin: 0.8rem 0;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.recipient-input::placeholder {
+  color: var(--text-muted);
+}
+
+.recipient-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
 }
 
 /* Send section */
@@ -204,16 +290,62 @@
   color: var(--danger);
 }
 
-.tx-link {
-  color: var(--accent);
-  text-decoration: none;
+.tx-sig-hash {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
   word-break: break-all;
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
 }
 
-.tx-link:hover {
-  text-decoration: underline;
+.tx-explorers {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.explorer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5em 1em;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.explorer-link.solana-explorer {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid rgba(20, 241, 149, 0.2);
+}
+
+.explorer-link.solana-explorer:hover {
+  background: rgba(20, 241, 149, 0.25);
+}
+
+.explorer-link.solscan {
+  background: rgba(129, 140, 248, 0.15);
+  color: #818cf8;
+  border: 1px solid rgba(129, 140, 248, 0.2);
+}
+
+.explorer-link.solscan:hover {
+  background: rgba(129, 140, 248, 0.25);
+}
+
+.explorer-link.solanafm {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.explorer-link.solanafm:hover {
+  background: rgba(245, 158, 11, 0.25);
 }
 
 .tx-error-msg {
