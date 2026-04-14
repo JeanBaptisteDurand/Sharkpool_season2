@@ -1,0 +1,292 @@
+.app {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  margin-top: 2rem;
+}
+
+.header h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent) 0%, #00d4aa 50%, var(--accent-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header .logo-icon {
+  font-size: 2.5rem;
+}
+
+/* Wallet button override */
+.wallet-adapter-button {
+  background: linear-gradient(135deg, var(--accent-secondary), #7b2fd4) !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  padding: 0.7em 1.5em !important;
+  font-size: 1rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.wallet-adapter-button:hover {
+  opacity: 0.9 !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Cards grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  width: 100%;
+  max-width: 700px;
+  margin-top: 1.5rem;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(20, 241, 149, 0.2);
+}
+
+.card-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.card-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-all;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.card-value.balance {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.card.address-card {
+  grid-column: 1 / -1;
+}
+
+.card.balance-card {
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+/* Network badge */
+.network-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--accent-dim);
+  color: var(--accent);
+  padding: 0.3em 0.8em;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.network-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Send section */
+.send-section {
+  grid-column: 1 / -1;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.send-section h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.send-recipient {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.send-btn {
+  background: linear-gradient(135deg, var(--accent), #00d4aa);
+  color: #0a0e1a;
+  border: none;
+  padding: 0.85em 2.5em;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.02em;
+}
+
+.send-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(20, 241, 149, 0.3);
+}
+
+.send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* TX result */
+.tx-result {
+  grid-column: 1 / -1;
+  background: var(--bg-card);
+  border: 1px solid rgba(20, 241, 149, 0.3);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  text-align: center;
+}
+
+.tx-result.success {
+  border-color: rgba(20, 241, 149, 0.3);
+}
+
+.tx-result.error {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.tx-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.tx-result.error .tx-label {
+  color: var(--danger);
+}
+
+.tx-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+.tx-link:hover {
+  text-decoration: underline;
+}
+
+.tx-error-msg {
+  color: var(--danger);
+  font-size: 0.85rem;
+}
+
+/* Stats bar */
+.stats-bar {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+  padding: 1rem;
+  border-top: 1px solid var(--border-color);
+  width: 100%;
+  max-width: 700px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Wallet actions */
+.wallet-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.wallet-adapter-button-trigger {
+  background: linear-gradient(135deg, var(--accent-secondary), #7b2fd4) !important;
+}
+
+.wallet-adapter-dropdown button[class*="disconnect"],
+button[class*="wallet-adapter-button"][class*="disconnect"] {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: var(--danger) !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Not connected state */
+.connect-prompt {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.connect-prompt p {
+  color: var(--text-secondary);
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+/* Footer note */
+.footer-note {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}

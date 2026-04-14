@@ -3,3 +3,10 @@
 !package.json
 !package-lock.json
 !tsconfig.json
+
+# Node
+node_modules/
+dist/
+
+# Logs
+*.log
