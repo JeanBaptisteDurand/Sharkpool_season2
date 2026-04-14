@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SharkPool Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --card: #131929;
+      --border: #1e2a42;
+      --accent: #00c2ff;
+      --accent2: #00e5a0;
+      --text: #e0e6f0;
+      --muted: #7a8ba7;
+      --danger: #ff4d6a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .logo svg {
+      width: 36px;
+      height: 36px;
+    }
+
+    .logo .shark { color: var(--accent); }
+    .logo .pool { color: var(--accent2); }
+
+    .refresh-info {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .metric-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      transition: border-color 0.2s;
+    }
+
+    .metric-card:hover {
+      border-color: var(--accent);
+    }
+
+    .metric-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .metric-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .metric-value.accent { color: var(--accent); }
+    .metric-value.green { color: var(--accent2); }
+
+    .charts-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .charts-section { grid-template-columns: 1fr; }
+      main { padding: 1rem; }
+      header { padding: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+    }
+
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .chart-card h3 {
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .validator-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .validator-search {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .validator-search input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .validator-search input:focus {
+      border-color: var(--accent);
+    }
+
+    .validator-search input::placeholder {
+      color: var(--muted);
+    }
+
+    .validator-search button {
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: opacity 0.2s;
+    }
+
+    .validator-search button:hover { opacity: 0.85; }
+    .validator-search button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .validator-result {
+      display: none;
+    }
+
+    .validator-result.active {
+      display: block;
+    }
+
+    .validator-stats {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .validator-stat .label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .validator-stat .value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-top: 0.25rem;
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .error-msg.active {
+      display: block;
+    }
+
+    .loading {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .epoch-bar-container {
+      margin-top: 0.5rem;
+      background: var(--bg);
+      border-radius: 6px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .epoch-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 6px;
+      transition: width 0.5s ease;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+    }
+
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 3C9.72 3 3 9.72 3 18s6.72 15 15 15 15-6.72 15-15S26.28 3 18 3z" fill="#131929" stroke="#00c2ff" stroke-width="1.5"/>
+        <path d="M10 20c2-4 5-6 8-6s5 1 7 4c-1 3-4 6-7 7s-6-1-8-5z" fill="#00c2ff" opacity="0.3"/>
+        <path d="M25 18l-4-3-3 1-4-2-4 4 3 3 4-1 3 2z" fill="#00c2ff"/>
+      </svg>
+      <span><span class="shark">Shark</span><span class="pool">Pool</span> Dashboard</span>
+    </div>
+    <div class="refresh-info">Auto-refresh every 60s &bull; <span id="lastUpdate">—</span></div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Blockchain Metrics</h2>
+      <div class="metrics-grid" id="metricsGrid">
+        <div class="metric-card">
+          <div class="metric-label">SOL Price</div>
+          <div class="metric-value accent" id="solPrice">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">sharkSOL APY</div>
+          <div class="metric-value green" id="sharkApy">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Pool Amount</div>
+          <div class="metric-value" id="poolAmount">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">TPS</div>
+          <div class="metric-value" id="tps">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Epoch</div>
+          <div class="metric-value" id="epoch">—</div>
+          <div class="epoch-bar-container">
+            <div class="epoch-bar" id="epochBar" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Time Remaining</div>
+          <div class="metric-value" id="remaining">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>LST Metrics — Last 30 Days</h2>
+      <div class="charts-section">
+        <div class="chart-card">
+          <h3>Total Pool (SOL)</h3>
+          <canvas id="lamportsChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>APY Ratio (%)</h3>
+          <canvas id="apyChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Validator Lookup</h2>
+      <div class="validator-section">
+        <div class="validator-search">
+          <input type="text" id="voteInput" placeholder="Enter validator vote address..." />
+          <button id="lookupBtn" onclick="lookupValidator()">Lookup</button>
+        </div>
+        <div class="error-msg" id="validatorError"></div>
+        <div class="validator-result" id="validatorResult">
+          <div class="validator-stats">
+            <div class="validator-stat">
+              <div class="label">Vote Address</div>
+              <div class="value" id="valAddress" style="font-size:0.85rem;word-break:break-all;">—</div>
+            </div>
+            <div class="validator-stat">
+              <div class="label">Current Stake</div>
+              <div class="value accent" id="valStake">—</div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3>Stake History</h3>
+            <canvas id="stakeChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Powered by <a href="https://public-api.sharkpool.org/docs" target="_blank">SharkPool Public API</a>
+    &bull; Built for SharkPool Season 2
+  </footer>
+
+  <script>
+    const API = 'https://public-api.sharkpool.org';
+    const LAMPORTS_PER_SOL = 1_000_000_000;
+
+    let lamportsChart, apyChart, stakeChart;
+
+    // --- Utilities ---
+    function formatSol(lamports) {
+      const sol = lamports / LAMPORTS_PER_SOL;
+      if (sol >= 1_000_000) return (sol / 1_000_000).toFixed(2) + 'M';
+      if (sol >= 1_000) return (sol / 1_000).toFixed(1) + 'K';
+      return sol.toFixed(2);
+    }
+
+    function formatTime(seconds) {
+      if (!seconds) return '—';
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      return `${h}h ${m}m`;
+    }
+
+    function shortDate(isoStr) {
+      const d = new Date(isoStr);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function chartDefaults() {
+      return {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: {
+            ticks: { color: '#7a8ba7', maxTicksLimit: 8 },
+            grid: { color: '#1e2a42' }
+          },
+          y: {
+            ticks: { color: '#7a8ba7' },
+            grid: { color: '#1e2a42' }
+          }
+        }
+      };
+    }
+
+    // --- Fetch Metrics ---
+    async function fetchMetrics() {
+      try {
+        const res = await fetch(`${API}/metrics`);
+        const data = await res.json();
+
+        document.getElementById('solPrice').textContent = '$' + data.solanaPrice.toFixed(2);
+        document.getElementById('sharkApy').textContent = (data.sharkSolApy * 100).toFixed(2) + '%';
+        document.getElementById('poolAmount').textContent = formatSol(data.poolAmount) + ' SOL';
+        document.getElementById('tps').textContent = data.transactionsPerSecond ? data.transactionsPerSecond.toFixed(0) : '—';
+        document.getElementById('epoch').textContent = data.epoch || '—';
+        document.getElementById('remaining').textContent = formatTime(data.remainingTime);
+
+        const progress = (data.epochProgress * 100).toFixed(1);
+        document.getElementById('epochBar').style.width = progress + '%';
+      } catch (e) {
+        console.error('Failed to fetch metrics:', e);
+      }
+    }
+
+    // --- Fetch LST Metrics ---
+    async function fetchLstMetrics() {
+      try {
+        const res = await fetch(`${API}/lst/metrics`);
+        const data = await res.json();
+
+        const metrics = data.metrics.slice().reverse();
+        const labels = metrics.map(m => shortDate(m.time));
+        const lamports = metrics.map(m => m.lastEpochTotalLamports / LAMPORTS_PER_SOL);
+        const apys = metrics.map(m => m.ratioApy * 100);
+
+        if (lamportsChart) lamportsChart.destroy();
+        lamportsChart = new Chart(document.getElementById('lamportsChart'), {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              data: lamports,
+              borderColor: '#00c2ff',
+              backgroundColor: 'rgba(0,194,255,0.1)',
+              fill: true,
+              tension: 0.3,
+              pointRadius: 2
+            }]
+          },
+          options: {
+            ...chartDefaults(),
+            scales: {
+              ...chartDefaults().scales,
+              y: {
+                ...chartDefaults().scales.y,
+                ticks: {
+                  ...chartDefaults().scales.y.ticks,
+                  callback: v => (v / 1_000_000).toFixed(1) + 'M'
+                }
+              }
+            }
+          }
+        });
+
+        if (apyChart) apyChart.destroy();
+        apyChart = new Chart(document.getElementById('apyChart'), {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              data: apys,
+              borderColor: '#00e5a0',
+              backgroundColor: 'rgba(0,229,160,0.1)',
+              fill: true,
+              tension: 0.3,
+              pointRadius: 2
+            }]
+          },
+          options: chartDefaults()
+        });
+      } catch (e) {
+        console.error('Failed to fetch LST metrics:', e);
+      }
+    }
+
+    // --- Validator Lookup ---
+    async function lookupValidator() {
+      const input = document.getElementById('voteInput').value.trim();
+      const errorEl = document.getElementById('validatorError');
+      const resultEl = document.getElementById('validatorResult');
+      const btn = document.getElementById('lookupBtn');
+
+      errorEl.classList.remove('active');
+      resultEl.classList.remove('active');
+
+      if (!input) {
+        errorEl.textContent = 'Please enter a vote address.';
+        errorEl.classList.add('active');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Loading...';
+
+      try {
+        const res = await fetch(`${API}/validators/vote/${encodeURIComponent(input)}/stake`);
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.message || `Validator not found (${res.status})`);
+        }
+
+        const data = await res.json();
+
+        document.getElementById('valAddress').textContent = data.voteAddress;
+        document.getElementById('valStake').textContent = formatSol(data.currentStake) + ' SOL';
+
+        if (data.stakeHistory && data.stakeHistory.length > 0) {
+          const history = data.stakeHistory.slice().reverse();
+          const labels = history.map(h => shortDate(h.time));
+          const stakes = history.map(h => h.stakeAmount / LAMPORTS_PER_SOL);
+
+          if (stakeChart) stakeChart.destroy();
+          stakeChart = new Chart(document.getElementById('stakeChart'), {
+            type: 'bar',
+            data: {
+              labels,
+              datasets: [{
+                data: stakes,
+                backgroundColor: 'rgba(0,194,255,0.5)',
+                borderColor: '#00c2ff',
+                borderWidth: 1,
+                borderRadius: 4
+              }]
+            },
+            options: chartDefaults()
+          });
+        }
+
+        resultEl.classList.add('active');
+      } catch (e) {
+        errorEl.textContent = e.message;
+        errorEl.classList.add('active');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Lookup';
+      }
+    }
+
+    // Enter on input triggers lookup
+    document.getElementById('voteInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') lookupValidator();
+    });
+
+    // --- Init ---
+    async function refresh() {
+      await Promise.all([fetchMetrics(), fetchLstMetrics()]);
+      document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+    }
+
+    refresh();
+    setInterval(refresh, 60_000);
+  </script>
+</body>
+</html>
